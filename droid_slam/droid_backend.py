@@ -31,6 +31,7 @@ class DroidBackend:
       alpha=0.005,
       ret_mask=False,
       ret_hessian=False,
+      ret_weight=False, # Confidence Map (n, H, W, 2)
   ):
     """main update"""
     t = self.video.counter.value
@@ -67,4 +68,10 @@ class DroidBackend:
 
     graph.clear_edges()
     self.video.dirty[:t] = True
+
+    if ret_weight:
+      ht, wd = graph.coords0.shape[0:2]
+      weight = graph.weight.view(-1, ht, wd, 2)
+      return median_hessian, motion_prob, weight
+
     return median_hessian, motion_prob

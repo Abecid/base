@@ -148,13 +148,14 @@ class Droid:
     if full_ba:
       print("\nGLOBAL FRAME BA " + "#" * 32, " use_mono ", use_mono)
       torch.cuda.empty_cache()
-      _, mot_prob = self.backend(
+      _, mot_prob, graph_weight = self.backend(
           15,
           opt_intr=False,
           use_mono=use_mono,
           alpha=alpha,
           ret_hessian=False,
           ret_mask=True,
+          ret_weight=True,
       )
 
       opt_disps = self.video.disps[: self.video.counter.value, ...]
@@ -169,6 +170,7 @@ class Droid:
           full_ba_trajectory.data.cpu().numpy(),
           1.0 / est_disps[:, 0, ...].cpu().numpy(),
           mot_prob.cpu().numpy(),
+          graph_weight
       )
     else:
       opt_disps = self.video.disps_sens[: self.video.counter.value]
